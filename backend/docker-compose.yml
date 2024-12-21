@@ -1,0 +1,18 @@
+services:
+
+  db:
+    image: postgres
+    restart: always
+    shm_size: 128mb
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: linkedin
+    ports:
+      - 5431:5432 # Map PostgreSQL container port 5432 to host port 5431
+
+  mailhog:
+    image: mailhog/mailhog:v1.0.1
+    ports:
+      - '1025:1025'
+      - '8025:8025'  # Web UI for viewing emails
