@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.Random;
 
 @Service
 public class AuthenticationService {
@@ -58,19 +57,17 @@ public class AuthenticationService {
     }
 
     public void validateEmailVerificationToken(String token, String email) {
-        AuthenticationUser user = authenticationUserRepository
-                .findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-        if (user.getEmailVerificationToken() == null) {
-            throw new IllegalArgumentException("Email verification token not found");
+        Optional<AuthenticationUser> user = authenticationUserRepository.findByEmail(email);
+        if (user.isPresent() && encoder.matches(token, user.get().getEmailVerificationToken()) && !user.get().getEmailVerificationTokenExpiryDate().isBefore(LocalDateTime.now())) {
+            user.get().setEmailVerified(true);
+            user.get().setEmailVerificationToken(null);
+            user.get().setEmailVerificationTokenExpiryDate(null);
+            authenticationUserRepository.save(user.get());
+        } else if (user.isPresent() && encoder.matches(token, user.get().getEmailVerificationToken()) && user.get().getEmailVerificationTokenExpiryDate().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Email verification token expired.");
+        } else {
+            throw new IllegalArgumentException("Email verification token failed.");
         }
-        if (user.getEmailVerificationTokenExpiryDate() == null) {
-            throw new IllegalArgumentException("Email verification token expiry date not found");
-        }
-        if (user.getEmailVerified()) {
-            throw new IllegalArgumentException("Email already verified");
-        }
-
     }
 
     public String generateEmailVerificationToken(){
