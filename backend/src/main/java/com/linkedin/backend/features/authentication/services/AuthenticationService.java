@@ -7,6 +7,9 @@ import com.linkedin.backend.features.authentication.repository.AuthenticationUse
 import com.linkedin.backend.features.authentication.utils.EmailService;
 import com.linkedin.backend.features.authentication.utils.Encoder;
 import com.linkedin.backend.features.authentication.utils.JsonWebToken;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +26,8 @@ public class AuthenticationService {
     private final EmailService emailService;
     private int durationInMinutes = 10;
 
+    @PersistenceContext
+    private EntityManager em;
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
 
     public AuthenticationService(Encoder encoder, AuthenticationUserRepository authenticationUserRepository, JsonWebToken jsonWebToken, EmailService emailService) {
@@ -137,5 +142,27 @@ public class AuthenticationService {
         } else {
             throw new IllegalArgumentException("Password reset token failed.");
         }
+    }
+
+    public AuthenticationUser updateUserProfile(Long userId, String firstName, String lastName, String company, String position, String location) {
+        AuthenticationUser user = authenticationUserRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found."));
+
+        if (firstName!= null) user.setFirstName(firstName);
+        if(lastName!=null) user.setLastName(lastName);
+        if(company!=null) user.setCompany(company);
+        if(position!=null) user.setPosition(position);
+        if(location!=null) user.setLocation(location);
+
+        return authenticationUserRepository.save(user);
+
+    }
+
+    @Transactional
+    public void deleteUser(Long id) {
+        AuthenticationUser user = em.find(AuthenticationUser.class, id);
+        if(user != null){
+            em.createNativeQuery("DELETE FROM posts_likes WHERE user_id= :userId").setParameter("userId",user.getId()).executeUpdate();
+        }
+        authenticationUserRepository.deleteById(id);
     }
 }
