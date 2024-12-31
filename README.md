@@ -107,14 +107,6 @@ The backend exposes RESTful APIs for all major functionalities. You can explore 
 
 - Configure in `frontend/.env`.
 
-## Contributing
-
-Contributions are welcome! Feel free to submit issues or pull requests.
-
-## License
-
-This project is licensed under the MIT License. See the `LICENSE` file for details.
-
 ---
 
 Happy coding! 🎉
