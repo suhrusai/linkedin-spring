@@ -2,8 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Box from "../../components/Box/Box";
 import Button from "../../components/Button/Button";
-import Input from "../../components/Input/Input";
-import Layout from "../../components/Layout/Layout";
+import Input from "../../../../components/Input/Input";
 import classes from "./VerifyEmail.module.scss";
 
 export default function VerifyEmail() {
@@ -72,7 +71,7 @@ export default function VerifyEmail() {
   }, []);
 
   return (
-    <Layout className={classes.root}>
+    <div className={classes.root}>
       <Box>
         <h1>Verify your Email</h1>
         <form
@@ -103,6 +102,6 @@ export default function VerifyEmail() {
           </Button>
         </form>
       </Box>
-    </Layout>
+    </div>
   );
 }
