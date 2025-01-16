@@ -48,7 +48,7 @@ public class AuthenticationUser {
     private List<Post> posts;
 
     private void updateProfileCompletionStatus(){
-        this.profileComplete = (this.firstName != null && this.lastName != null && this.profilePicture != null && this.company != null && this.position != null && this.location != null);
+        this.profileComplete = (this.firstName != null && this.lastName != null && this.company != null && this.position != null && this.location != null);
     }
 
     public AuthenticationUser(String email, String password) {

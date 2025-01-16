@@ -1,30 +1,44 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import  Loader from "../../../components/Loader/Loader";
-interface User {
+import Loader from "../../../components/Loader/Loader";
+
+export interface User {
   id: string;
   email: string;
-  name: string;
   emailVerified: boolean;
+  firstName?: string;
+  lastName?: string;
+  company?: string;
+  position?: string;
+  location?: string;
+  profileComplete: boolean;
+  profilePicture?: string;
 }
+
 interface AuthenticationContextType {
   user: User | null;
+  setUser: Dispatch<SetStateAction<User | null>>;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   signup: (email: string, password: string) => Promise<void>;
 }
+
 const AuthenticationContext = createContext<AuthenticationContextType | null>(null);
+
 export function useAuthentication() {
   return useContext(AuthenticationContext)!;
 }
+
 export default function AuthenticationContextProvider() {
   const location = useLocation();
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
   const isOnAuthPage =
-    location.pathname === "/login" ||
-    location.pathname === "/signup" ||
-    location.pathname === "/request-password-reset";
+    location.pathname === "/authentication/login" ||
+    location.pathname === "/authentication/signup" ||
+    location.pathname === "/authentication/request-password-reset";
+
   const login = async (email: string, password: string) => {
     const response = await fetch(import.meta.env.VITE_API_URL + "/api/v1/authentication/login", {
       method: "POST",
@@ -41,6 +55,7 @@ export default function AuthenticationContextProvider() {
       throw new Error(message);
     }
   };
+
   const signup = async (email: string, password: string) => {
     const response = await fetch(import.meta.env.VITE_API_URL + "/api/v1/authentication/register", {
       method: "POST",
@@ -57,10 +72,12 @@ export default function AuthenticationContextProvider() {
       throw new Error(message);
     }
   };
+
   const logout = async () => {
     localStorage.removeItem("token");
     setUser(null);
   };
+
   const fetchUser = async () => {
     try {
       const response = await fetch(import.meta.env.VITE_API_URL + "/api/v1/authentication/user", {
@@ -79,21 +96,53 @@ export default function AuthenticationContextProvider() {
       setIsLoading(false);
     }
   };
+
   useEffect(() => {
     if (user) {
       return;
     }
+
     fetchUser();
   }, [user, location.pathname]);
+
   if (isLoading) {
     return <Loader />;
   }
+
   if (!isLoading && !user && !isOnAuthPage) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/authentication/login" />;
   }
-  if (user && user.emailVerified && isOnAuthPage) {
+
+  if (user && !user.emailVerified && location.pathname !== "/authentication/verify-email") {
+    return <Navigate to="/authentication/verify-email" />;
+  }
+
+  if (user && user.emailVerified && location.pathname == "/authentication/verify-email") {
     return <Navigate to="/" />;
   }
+
+  if (
+    user &&
+    user.emailVerified &&
+    !user.profileComplete &&
+    !location.pathname.includes("/authentication/profile")
+  ) {
+    return <Navigate to={`/authentication/profile/${user.id}`} />;
+  }
+
+  if (
+    user &&
+    user.emailVerified &&
+    user.profileComplete &&
+    location.pathname.includes("/authentication/profile")
+  ) {
+    return <Navigate to="/" />;
+  }
+
+  if (user && isOnAuthPage) {
+    return <Navigate to="/" />;
+  }
+
   return (
     <AuthenticationContext.Provider
       value={{
@@ -101,9 +150,9 @@ export default function AuthenticationContextProvider() {
         login,
         logout,
         signup,
+        setUser,
       }}
     >
-      {user && !user.emailVerified ? <Navigate to="/verify-email" /> : null}
       <Outlet />
     </AuthenticationContext.Provider>
   );
