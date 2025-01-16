@@ -23,6 +23,7 @@ public class LoadDatabaseConfiguration {
 
     @Bean
     public CommandLineRunner initDatabase(AuthenticationUserRepository authenticationUserRepository, PostRepository postRepository) {
+        System.out.println("Supp");
         return args -> {
             List<AuthenticationUser> users = createUsers(authenticationUserRepository);
             createPosts(postRepository, users);
@@ -31,7 +32,7 @@ public class LoadDatabaseConfiguration {
 
     private List<AuthenticationUser> createUsers(AuthenticationUserRepository authenticationUserRepository) {
         List<AuthenticationUser> users = List.of(
-                createUser("john.doe@example.com", "password", "John", "Doe", "Software Engineer", "Docker Inc.", "San Francisco, CA",
+                createUser("suhrusai@gmail.com", "password", "John", "Doe", "Software Engineer", "Docker Inc.", "San Francisco, CA",
                         "https://images.unsplash.com/photo-1633332755192-727a05c4013d?q=80&w=3560&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"),
                 createUser("anne.claire@example.com", "anne", "Anne", "Claire", "HR Manager", "eToro", "Paris, Fr",
                         "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=3687&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"),
@@ -62,7 +63,7 @@ public class LoadDatabaseConfiguration {
 
     private void createPosts(PostRepository postRepository, List<AuthenticationUser> users) {
         Random random = new Random();
-        for (int j = 1; j <= 10; j++) {
+        for (int j = 1; j <= 50; j++) {
             Post post = new Post("Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
                     users.get(random.nextInt(users.size())));
             post.setLikes(generateLikes(users, j, random));

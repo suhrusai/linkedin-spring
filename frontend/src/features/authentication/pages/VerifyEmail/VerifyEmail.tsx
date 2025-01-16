@@ -1,16 +1,28 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import Box from "../../components/Box/Box";
-import Button from "../../components/Button/Button";
-import Input from "../../../../components/Input/Input";
+import  Button  from "../../../../components/Button/Button";
+import Input  from "../../../../components/Input/Input";
+import  Box  from "../../components/Box/Box";
 import classes from "./VerifyEmail.module.scss";
+import { usePageTitle } from "../../../../hooks/usePageTitle";
+import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuthentication } from "../../contexts/AuthenticationContextProvider";
 
 export default function VerifyEmail() {
   const [errorMessage, setErrorMessage] = useState("");
+  const { user, setUser } = useAuthentication();
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const mountedRef = useRef(false)
+  usePageTitle("Verify Email")
 
+  useEffect(() => {
+    if(!mountedRef.current){
+      mountedRef.current = true
+      sendEmailVerificationToken()
+      console.log("Verification Email Sent Successfully")
+    }
+  },[])
   const validateEmail = async (code: string) => {
     setMessage("");
     try {
@@ -27,9 +39,10 @@ export default function VerifyEmail() {
       );
       if (response.ok) {
         setErrorMessage("");
+        setUser({ ...user!, emailVerified: true });
         navigate("/");
       }
-      const { message } = await response.json();
+      const message = await response.text();
       setErrorMessage(message);
     } catch (e) {
       console.log(e);
@@ -55,7 +68,7 @@ export default function VerifyEmail() {
         setMessage("Code sent successfully. Please check your email.");
         return;
       }
-      const { message } = await response.json();
+      const message = await response.text();
       setErrorMessage(message);
     } catch (e) {
       console.log(e);
@@ -65,15 +78,11 @@ export default function VerifyEmail() {
     }
   };
 
-  // Automatically send email verification token when the page loads
-  useEffect(() => {
-    sendEmailVerificationToken();
-  }, []);
-
   return (
     <div className={classes.root}>
       <Box>
         <h1>Verify your Email</h1>
+
         <form
           onSubmit={async (e) => {
             e.preventDefault();

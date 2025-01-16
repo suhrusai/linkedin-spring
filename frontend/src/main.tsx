@@ -10,6 +10,7 @@ import AuthenticationContextProvider from './features/authentication/contexts/Au
 import AuthenticationLayout from './features/authentication/components/AuthenticationLayout/AuthenticationLayout'
 import Signup from './features/authentication/pages/SignUp/SignUp'
 import ApplicationLayout from './features/authentication/components/ApplicationLayout/ApplicationLayout'
+import Profile from '../src/features/authentication/pages/Profile/Profile'
 
 const router = createBrowserRouter([
     {
@@ -41,7 +42,7 @@ const router = createBrowserRouter([
             },
             {
               path: "profile/:id",
-              element: <div>Profile</div>,
+              element: <Profile/>,
             },
             {
               path: "settings",
@@ -71,7 +72,7 @@ const router = createBrowserRouter([
             },
             {
               path: "profile/:id",
-              element: <h1>Profile</h1>,
+              element: <Profile/>,
             },
           ],
         },

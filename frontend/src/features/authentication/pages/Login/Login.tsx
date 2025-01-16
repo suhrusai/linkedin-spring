@@ -3,7 +3,7 @@ import Box from "../../components/Box/Box";
 import Seperator from "../../components/Seperator/Seperator";
 import classes from "./Login.module.scss";
 import Input from "../../../../components/Input/Input";
-import Button from "../../components/Button/Button";
+import Button from "../../../../components/Button/Button";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuthentication } from "../../contexts/AuthenticationContextProvider";
 

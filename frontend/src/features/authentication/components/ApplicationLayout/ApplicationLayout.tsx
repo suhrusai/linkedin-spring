@@ -5,7 +5,7 @@ export default function ApplicationLayout() {
   return (
     <div className={classes.root}>
         <Header></Header>
-        <main>
+        <main className={classes.container}>
             <Outlet/>
         </main>
     </div>

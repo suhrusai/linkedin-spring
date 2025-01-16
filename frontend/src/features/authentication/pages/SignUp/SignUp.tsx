@@ -1,7 +1,7 @@
 import { FormEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Box from "../../components/Box/Box";
-import Button from "../../components/Button/Button";
+import Button from "../../../../components/Button/Button.tsx";
 import Input from "../../../../components/Input/Input.tsx";
 import Seperator from "../../components/Seperator/Seperator";
 import { useAuthentication } from "../../contexts/AuthenticationContextProvider.tsx";
